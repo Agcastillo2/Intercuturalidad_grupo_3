@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Servicio de MySQL
+  db:
+    image: mysql:latest
+    container_name: mysql-tienda
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tienda
+      MYSQL_USER: dark
+      MYSQL_PASSWORD: Dark230900.
+    ports:
+      - "3306:3306"
+    volumes:
+      # Puedes mapear un volumen para persistir los datos de la base de datos
+      - db_data:/var/lib/mysql
+      # Opcional: Para ejecutar scripts SQL iniciales al levantar el contenedor
+      # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always # Reiniciar el contenedor si se detiene
+
+  # Servicio de la aplicación PHP (PHP-FPM)
+  php:
+    build:
+      context: ./app # Especifica el directorio donde está el Dockerfile de PHP
+      dockerfile: Dockerfile
+    container_name: php-app
+    volumes:
+      - ./app:/var/www/html # Mapea tu código PHP local al contenedor
+    depends_on:
+      - db # Asegura que la base de datos se inicie antes que PHP
+    restart: always
+
+  # Servicio del servidor web Nginx
+  nginx:
+    image: nginx:latest
+    container_name: nginx-web
+    ports:
+      - "80:80" # Mapea el puerto 80 del host al puerto 80 del contenedor
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf # Monta tu configuración de Nginx
+      - ./app:/var/www/html # Mapea el mismo directorio de código PHP para que Nginx lo sirva
+    depends_on:
+      - php # Asegura que PHP-FPM se inicie antes que Nginx
+    restart: always
+
+# Volúmenes para persistencia de datos
+volumes:
+  db_data:
