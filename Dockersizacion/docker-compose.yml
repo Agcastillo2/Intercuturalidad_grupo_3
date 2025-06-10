@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  # Servidor web con PHP
+  web:
+    build: .  # Usar el Dockerfile local en lugar de imagen directa
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+
+  # Base de datos MySQL
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: tienda
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # phpMyAdmin (opcional, para gestionar la BD)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: user
+      PMA_PASSWORD: pass
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
