@@ -1,4 +1,4 @@
-# Intercuturalidad_grupo_3
+# Intercuturalidad Grupo 3
 
 Este proyecto es una aplicación CRUD de libros desarrollada en Java 17, utilizando IntelliJ IDEA Community Edition y el servidor Payara 6.26.0.
 
